@@ -1,0 +1,85 @@
+<html> 
+   <head> 
+      <title>success</title>
+      <link rel="stylesheet" href="../styles.css">
+   </head> 
+   <body>
+      <svg id="firework" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+         <defs>
+            <circle id="spark" r="3" cx="0" cy="0" fill="#FFD700"/>
+           <!-- <path id="spark" d="M 0,0 L 5,5 L 0,10 L -5,5 Z" fill="#FFD700" /> -->
+           <path id="path" d="M 0,0 L 0,-90" fill="none" />
+         </defs>
+       </svg>
+
+      <div class="success">
+         <p></p>
+         <p>Загрузка успешна</p> 
+         <p>С вероятностью: {{probas_type}}</p> 
+         <p>Это: {{type_str}}</p>
+      </div>
+      <button>Вернуться на главную</button>
+
+      <script>
+         var counter = 0;
+         const n = 15;
+         const duration = 2;
+         const pause = 0.8;
+
+         const svg = document.querySelector('svg');
+         const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) * 0.7;
+         const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) * 0.3;
+
+         function createObject() {
+            // Generate random coordinates
+            const posX = Math.random() * vw; // Random X-coordinate
+            const posY = Math.random() * vh; // Random Y-coordinate
+
+            const firework = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+            firework.setAttribute('transform', `translate(${posX}, ${posY})`);
+
+            for (let i = 0; i < n; i++) {
+               const spark_wrapper = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+               spark_wrapper.setAttribute('transform', `rotate(${(360 / n) * i})`);
+               const spark = document.createElementNS("http://www.w3.org/2000/svg", 'use');
+               spark.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#spark");
+
+               const animation = document.createElementNS("http://www.w3.org/2000/svg", 'animateMotion');
+               animation.setAttribute("dur", `${duration}s`); // Set the animation duration here
+               animation.setAttribute("repeatCount", "1");
+               animation.setAttribute("begin", `${(counter + 1) * pause}s`);
+               const mpath = document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+               mpath.setAttributeNS("http://www.w3.org/1999/xlink", "href", '#path');
+               animation.appendChild(mpath);
+               spark.appendChild(animation);
+
+               spark_wrapper.appendChild(spark);
+               firework.appendChild(spark_wrapper);
+            }
+
+            svg.appendChild(firework);
+
+            
+            // Remove the firework after its animation duration
+            setTimeout(() => {
+               svg.removeChild(firework);
+            }, duration * 1000 * 0.7); // Assuming each animation duration is 1 second
+
+            counter++;
+         }
+
+         // setInterval(createObject, 1000);
+
+         setTimeout(() => {
+            // Create a new firework every 1 second
+            const intervalId = setInterval(createObject, pause * 1000);
+
+            // Stop creating fireworks after 5 seconds
+            setTimeout(() => {
+               clearInterval(intervalId);
+            }, 30000);
+         }, 0);
+
+       </script>
+   </body> 
+</html>
